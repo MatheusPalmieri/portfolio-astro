@@ -32,8 +32,8 @@ const localeFlags: Record<Locale, string> = {
         aria-label="Toggle theme"
         title="Toggle dark/light mode"
       >
-        <!-- Sun icon — shown in dark mode (click to go light) -->
-        <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <!-- Sun: visible in dark mode -->
+        <svg id="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
           <circle cx="12" cy="12" r="5"/>
           <line x1="12" y1="1" x2="12" y2="3"/>
           <line x1="12" y1="21" x2="12" y2="23"/>
@@ -44,8 +44,8 @@ const localeFlags: Record<Locale, string> = {
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
         </svg>
-        <!-- Moon icon — shown in light mode (click to go dark) -->
-        <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <!-- Moon: visible in light mode -->
+        <svg id="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
       </button>
@@ -146,8 +146,7 @@ const localeFlags: Record<Locale, string> = {
     background: transparent;
     color: var(--color-muted);
     cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
+    transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
   }
 
   .theme-btn:hover {
@@ -158,35 +157,6 @@ const localeFlags: Record<Locale, string> = {
 
   .theme-btn:active {
     transform: scale(0.95);
-  }
-
-  /* Each icon is absolutely positioned so they stack */
-  .icon-sun,
-  .icon-moon {
-    position: absolute;
-    transition: opacity 0.25s ease, transform 0.25s ease;
-  }
-
-  /* Dark mode → show sun (to switch to light) */
-  [data-theme='dark'] .icon-sun {
-    opacity: 1;
-    transform: rotate(0deg) scale(1);
-  }
-  [data-theme='dark'] .icon-moon {
-    opacity: 0;
-    transform: rotate(30deg) scale(0.6);
-    pointer-events: none;
-  }
-
-  /* Light mode → show moon (to switch to dark) */
-  [data-theme='light'] .icon-sun {
-    opacity: 0;
-    transform: rotate(-30deg) scale(0.6);
-    pointer-events: none;
-  }
-  [data-theme='light'] .icon-moon {
-    opacity: 1;
-    transform: rotate(0deg) scale(1);
   }
 
   /* ─── Language selector ─────────────────────────────────────────────────── */
@@ -354,6 +324,38 @@ const localeFlags: Record<Locale, string> = {
 </style>
 
 <script>
+  // ─── Theme icon sync ─────────────────────────────────────────────────────
+  // CSS scoped cannot reach html[data-theme], so we control icons via JS only.
+  const iconSun  = document.getElementById('icon-sun')  as SVGElement | null;
+  const iconMoon = document.getElementById('icon-moon') as SVGElement | null;
+
+  function syncIcons(theme: string) {
+    if (!iconSun || !iconMoon) return;
+    if (theme === 'dark') {
+      iconSun.style.display  = 'block'; // dark → show sun (switch to light)
+      iconMoon.style.display = 'none';
+    } else {
+      iconSun.style.display  = 'none';
+      iconMoon.style.display = 'block'; // light → show moon (switch to dark)
+    }
+  }
+
+  // Sync on load
+  const currentTheme = document.documentElement.getAttribute('data-theme') ?? 'dark';
+  syncIcons(currentTheme);
+
+  // ─── Theme toggle ────────────────────────────────────────────────────────
+  const themeBtn = document.getElementById('theme-toggle');
+
+  themeBtn?.addEventListener('click', () => {
+    const html    = document.documentElement;
+    const current = html.getAttribute('data-theme') ?? 'dark';
+    const next    = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    syncIcons(next);
+  });
+
   // ─── Scroll detection ────────────────────────────────────────────────────
   const header = document.getElementById('header');
 
@@ -363,17 +365,6 @@ const localeFlags: Record<Locale, string> = {
 
   handleScroll();
   window.addEventListener('scroll', handleScroll, { passive: true });
-
-  // ─── Theme toggle ────────────────────────────────────────────────────────
-  const themeBtn = document.getElementById('theme-toggle');
-
-  themeBtn?.addEventListener('click', () => {
-    const html    = document.documentElement;
-    const current = html.getAttribute('data-theme');
-    const next    = current === 'dark' ? 'light' : 'dark';
-    html.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-  });
 
   // ─── Language selector ───────────────────────────────────────────────────
   const langSelector = document.getElementById('lang-selector');
