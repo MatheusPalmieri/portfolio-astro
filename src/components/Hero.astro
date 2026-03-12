@@ -1,48 +1,34 @@
 ---
+import { translations } from '../i18n/translations';
+import type { Locale } from '../i18n/translations';
+
+interface Props { lang: Locale; }
+const { lang } = Astro.props;
+const t = translations[lang].hero;
 ---
 
 <section class="hero">
-  <p class="greeting">Hey, I'm</p>
+  <p class="greeting">{t.greeting}</p>
   <h1 class="name gradient-text">Matheus Palmieri</h1>
-  <p class="role">Full Stack Developer</p>
-  <p class="bio">
-    Full Stack Developer with 6+ years of experience in B2B products (ERP, CRM and internal
-    platforms), working end-to-end — from technical requirements to production delivery.
-    Strong focus on modern frontend with <strong>React</strong>, <strong>Next.js</strong> and
-    <strong>TypeScript</strong>, and scalable backend with <strong>Node.js</strong> (NestJS/Express)
-    and <strong>Python</strong>.
-  </p>
+  <p class="role">{t.role}</p>
+  <p class="bio" set:html={t.bio.replace('React', '<strong>React</strong>').replace('Next.js', '<strong>Next.js</strong>').replace('TypeScript', '<strong>TypeScript</strong>').replace('Node.js', '<strong>Node.js</strong>').replace('Python', '<strong>Python</strong>')} />
 
   <div class="links">
-    <a href="https://www.linkedin.com/in/matheusandrepalmieri/" target="_blank" rel="noopener">
-      LinkedIn
-    </a>
-    <span class="separator">·</span>
-    <a href="https://github.com/MatheusPalmieri" target="_blank" rel="noopener">
-      GitHub
-    </a>
-    <span class="separator">·</span>
-    <a href="https://matheuspalmieri.netlify.app/" target="_blank" rel="noopener">
-      Portfolio
-    </a>
-    <span class="separator">·</span>
-    <a href="mailto:matheuspalmieridev+cv@gmail.com">
-      Email
-    </a>
+    <a href="https://www.linkedin.com/in/matheusandrepalmieri/" target="_blank" rel="noopener">{t.links.linkedin}</a>
+    <span class="sep">·</span>
+    <a href="https://github.com/MatheusPalmieri" target="_blank" rel="noopener">{t.links.github}</a>
+    <span class="sep">·</span>
+    <a href="https://matheuspalmieri.netlify.app/" target="_blank" rel="noopener">{t.links.portfolio}</a>
+    <span class="sep">·</span>
+    <a href="mailto:matheuspalmieridev+cv@gmail.com">{t.links.email}</a>
   </div>
 
   <div class="skills">
-    <p class="skills-label">Main skills</p>
+    <p class="skills-label">{t.mainSkills}</p>
     <div class="skills-list">
-      <span>React.js</span>
-      <span>Node.js</span>
-      <span>TypeScript</span>
-      <span>Next.js</span>
-      <span>NestJS</span>
-      <span>Python</span>
-      <span>PostgreSQL</span>
-      <span>Docker</span>
-      <span>AWS</span>
+      <span>React.js</span><span>Node.js</span><span>TypeScript</span>
+      <span>Next.js</span><span>NestJS</span><span>Python</span>
+      <span>PostgreSQL</span><span>Docker</span><span>AWS</span>
     </div>
   </div>
 </section>
@@ -60,7 +46,7 @@
   }
 
   .name {
-    font-size: clamp(2.5rem, 6vw, 3.5rem);
+    font-size: clamp(2.5rem, 5vw, 3.75rem);
     font-weight: 600;
     line-height: 1.1;
     margin-bottom: 0.4rem;
@@ -68,22 +54,22 @@
   }
 
   .role {
-    font-size: 1rem;
+    font-size: 1.05rem;
     color: var(--color-muted);
     margin-bottom: 1.5rem;
     font-weight: 400;
   }
 
   .bio {
-    font-size: 0.95rem;
-    color: #d1d1d1;
-    line-height: 1.75;
+    font-size: 0.975rem;
+    color: var(--color-muted);
+    line-height: 1.8;
     margin-bottom: 1.5rem;
-    max-width: 600px;
+    max-width: 680px;
   }
 
-  .bio strong {
-    color: #fff;
+  .bio :global(strong) {
+    color: var(--color-text);
     font-weight: 500;
   }
 
@@ -95,18 +81,16 @@
     margin-bottom: 2rem;
   }
 
-  .links a {
-    font-size: 0.875rem;
-    color: var(--color-link);
-  }
+  .links a { font-size: 0.875rem; }
 
-  .separator {
+  .sep {
     color: var(--color-subtle);
     font-size: 0.75rem;
+    user-select: none;
   }
 
   .skills {
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid var(--color-border);
     padding-top: 1.5rem;
   }
 
@@ -127,9 +111,9 @@
   .skills-list span {
     font-size: 0.8rem;
     color: var(--color-muted);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 4px;
-    padding: 0.2rem 0.6rem;
+    background: var(--color-skill-bg);
+    border: 1px solid var(--color-skill-border);
+    border-radius: 5px;
+    padding: 0.2rem 0.65rem;
   }
 </style>

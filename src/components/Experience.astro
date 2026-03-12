@@ -1,81 +1,17 @@
 ---
-const jobs = [
-  {
-    company: 'Jumpad',
-    role: 'Full Stack Developer',
-    period: 'Aug 2025 — Present',
-    location: 'Remote',
-    description: [
-      'Developed and maintained microservices in Python, working on integrations and product feature evolution.',
-      'Implemented and evolved services/APIs in Node.js, ensuring consistent integration between front-end and back-end.',
-      'Worked on an AI-related product, delivering end-to-end features and integrations (backend + frontend).',
-      'Led the creation and coordination of a UI library in React/Next.js, accelerating deliveries and standardizing components.',
-      'Performed performance optimizations and UX improvements, reducing bottlenecks and increasing responsiveness.',
-    ],
-    tech: 'Python · Node.js · React.js · TypeScript · Tailwind CSS · Redux · CapRover',
-  },
-  {
-    company: 'Premiersoft',
-    role: 'Frontend Developer',
-    period: 'Oct 2024 — Jul 2025',
-    location: 'Remote',
-    description: [
-      'Developed an ERP for factory/machine management with React/TypeScript, integrating APIs and real-time data flows.',
-      'Delivered a technical inspection application with Next.js, focused on accessibility and mobile usability.',
-      'Optimized performance and build, reducing bundle size by 35% and accelerating AWS deployment.',
-      'Contributed to front-end architecture and CI/CD pipeline configuration, improving release predictability.',
-      'Optimized native camera usage in the browser, improving performance and stability in webapps.',
-    ],
-    tech: 'React.js · Next.js · TypeScript · Zustand · Tailwind CSS · Chakra UI · AWS (S3/CloudFront) · CI/CD',
-  },
-  {
-    company: 'Voeja',
-    role: 'Frontend Developer',
-    period: 'Jul 2024 — Oct 2024',
-    location: 'Remote',
-    description: [
-      'Planned and developed a B2B flight and hotel booking platform with Next.js/TypeScript, integrating booking flows and internal panel.',
-      'Implemented booking features and a management dashboard for agencies, increasing operational efficiency by 40%.',
-      'Ensured responsive and accessible UI, reducing corporate user churn by 25%.',
-      'Documented components and UI/UX patterns to accelerate onboarding and standardize team deliveries.',
-    ],
-    tech: 'Next.js · TypeScript · Tailwind CSS',
-  },
-  {
-    company: 'Btix',
-    role: 'Full Stack Developer',
-    period: 'Dec 2022 — Aug 2024',
-    location: 'Remote',
-    description: [
-      'Designed and implemented scalable REST APIs with Node.js and NestJS, increasing service reliability by 30%.',
-      'Implemented authentication/authorization with JWT, ensuring security and access control.',
-      'Applied Redis for caching and performance optimization in critical flows.',
-      'Maintained and evolved microservices in Express.js, focused on performance, scalability and continuous maintenance.',
-      'Wrote and maintained automated tests with Jest, increasing delivery reliability.',
-      'Documented and standardized endpoints with Swagger, facilitating integration between teams.',
-    ],
-    tech: 'Node.js · NestJS · Express.js · MongoDB · Redis · JWT · Jest · Swagger · CI/CD · TypeScript',
-  },
-  {
-    company: 'FG Empreendimentos',
-    role: 'IT Analyst',
-    period: 'Dec 2021 — Dec 2022',
-    location: 'Blumenau, SC',
-    description: [
-      'Automated internal processes with extensions/scripts, reducing repetitive manual tasks and rework.',
-      'Developed web interfaces with JavaScript/HTML/CSS/React to improve usability of legacy systems.',
-      'Performed machine setup/maintenance and provided help desk support (software/network/hardware) with SLA ≤ 4h.',
-    ],
-    tech: 'JavaScript · React · HTML5 · CSS3 · Windows Server',
-  },
-];
+import { translations } from '../i18n/translations';
+import type { Locale } from '../i18n/translations';
+
+interface Props { lang: Locale; }
+const { lang } = Astro.props;
+const t = translations[lang].experience;
 ---
 
 <section id="experience" class="section">
-  <h2 class="section-title">Experience</h2>
+  <h2 class="section-title">{t.title}</h2>
 
   <div class="jobs">
-    {jobs.map((job) => (
+    {t.jobs.map((job) => (
       <article class="job">
         <div class="job-header">
           <div>
@@ -87,13 +23,9 @@ const jobs = [
             <span class="job-location">{job.location}</span>
           </div>
         </div>
-
         <ul class="job-description">
-          {job.description.map((item) => (
-            <li>{item}</li>
-          ))}
+          {job.description.map((item) => <li>{item}</li>)}
         </ul>
-
         <p class="job-tech">{job.tech}</p>
       </article>
     ))}
@@ -103,7 +35,7 @@ const jobs = [
 <style>
   .section {
     padding: 2.5rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid var(--color-border);
   }
 
   .section-title {
@@ -114,17 +46,9 @@ const jobs = [
     margin-bottom: 2rem;
   }
 
-  .jobs {
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
-  }
+  .jobs { display: flex; flex-direction: column; gap: 2.5rem; }
 
-  .job {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
+  .job { display: flex; flex-direction: column; gap: 0.75rem; }
 
   .job-header {
     display: flex;
@@ -134,17 +58,8 @@ const jobs = [
     flex-wrap: wrap;
   }
 
-  .job-company {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #fff;
-  }
-
-  .job-role {
-    font-size: 0.85rem;
-    color: var(--color-muted);
-    margin-top: 0.1rem;
-  }
+  .job-company { font-size: 0.95rem; font-weight: 600; color: var(--color-text); }
+  .job-role    { font-size: 0.85rem; color: var(--color-muted); margin-top: 0.1rem; }
 
   .job-meta {
     display: flex;
@@ -154,15 +69,8 @@ const jobs = [
     flex-shrink: 0;
   }
 
-  .job-period {
-    font-size: 0.8rem;
-    color: var(--color-muted);
-  }
-
-  .job-location {
-    font-size: 0.75rem;
-    color: var(--color-subtle);
-  }
+  .job-period   { font-size: 0.8rem;  color: var(--color-muted); }
+  .job-location { font-size: 0.75rem; color: var(--color-subtle); }
 
   .job-description {
     list-style: none;
@@ -173,7 +81,7 @@ const jobs = [
 
   .job-description li {
     font-size: 0.875rem;
-    color: #c0c0c0;
+    color: var(--color-muted);
     line-height: 1.65;
     padding-left: 1rem;
     position: relative;

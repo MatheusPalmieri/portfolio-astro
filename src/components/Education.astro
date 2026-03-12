@@ -1,25 +1,17 @@
 ---
-const education = [
-  {
-    institution: 'Estácio',
-    degree: 'Bachelor of Software Engineering',
-    period: 'May 2023 — May 2027',
-    status: 'In progress',
-  },
-];
+import { translations } from '../i18n/translations';
+import type { Locale } from '../i18n/translations';
 
-const languages = [
-  { lang: 'Portuguese', level: 'Native' },
-  { lang: 'English', level: 'Intermediate' },
-  { lang: 'Spanish', level: 'Basic' },
-];
+interface Props { lang: Locale; }
+const { lang } = Astro.props;
+const t = translations[lang].education;
 ---
 
 <section id="education" class="section">
-  <h2 class="section-title">Education</h2>
+  <h2 class="section-title">{t.title}</h2>
 
   <div class="education-list">
-    {education.map((item) => (
+    {t.items.map((item) => (
       <article class="edu-item">
         <div class="edu-header">
           <div>
@@ -28,7 +20,7 @@ const languages = [
           </div>
           <div class="edu-meta">
             <span class="edu-period">{item.period}</span>
-            <span class="edu-status">{item.status}</span>
+            <span class="edu-status">{t.inProgress}</span>
           </div>
         </div>
       </article>
@@ -36,9 +28,9 @@ const languages = [
   </div>
 
   <div class="languages">
-    <h2 class="section-title" style="margin-top: 2rem;">Languages</h2>
+    <h2 class="section-title lang-title">{t.languagesTitle}</h2>
     <div class="lang-list">
-      {languages.map((l) => (
+      {t.languages.map((l) => (
         <div class="lang-item">
           <span class="lang-name">{l.lang}</span>
           <span class="lang-level">{l.level}</span>
@@ -51,7 +43,7 @@ const languages = [
 <style>
   .section {
     padding: 2.5rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid var(--color-border);
   }
 
   .section-title {
@@ -62,17 +54,8 @@ const languages = [
     margin-bottom: 2rem;
   }
 
-  .education-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .edu-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+  .education-list { display: flex; flex-direction: column; gap: 1.5rem; }
+  .edu-item       { display: flex; flex-direction: column; gap: 0.5rem; }
 
   .edu-header {
     display: flex;
@@ -82,17 +65,8 @@ const languages = [
     flex-wrap: wrap;
   }
 
-  .edu-institution {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #fff;
-  }
-
-  .edu-degree {
-    font-size: 0.85rem;
-    color: var(--color-muted);
-    margin-top: 0.1rem;
-  }
+  .edu-institution { font-size: 0.95rem; font-weight: 600; color: var(--color-text); }
+  .edu-degree      { font-size: 0.85rem; color: var(--color-muted); margin-top: 0.1rem; }
 
   .edu-meta {
     display: flex;
@@ -102,19 +76,12 @@ const languages = [
     flex-shrink: 0;
   }
 
-  .edu-period {
-    font-size: 0.8rem;
-    color: var(--color-muted);
-  }
+  .edu-period { font-size: 0.8rem;  color: var(--color-muted); }
+  .edu-status { font-size: 0.75rem; color: var(--color-subtle); }
 
-  .edu-status {
-    font-size: 0.75rem;
-    color: var(--color-subtle);
-  }
+  .languages { margin-top: 1rem; }
 
-  .languages {
-    margin-top: 0.5rem;
-  }
+  .lang-title { margin-top: 2rem; }
 
   .lang-list {
     display: flex;
@@ -129,13 +96,6 @@ const languages = [
     max-width: 220px;
   }
 
-  .lang-name {
-    font-size: 0.875rem;
-    color: #c0c0c0;
-  }
-
-  .lang-level {
-    font-size: 0.8rem;
-    color: var(--color-subtle);
-  }
+  .lang-name  { font-size: 0.875rem; color: var(--color-muted); }
+  .lang-level { font-size: 0.8rem;   color: var(--color-subtle); }
 </style>

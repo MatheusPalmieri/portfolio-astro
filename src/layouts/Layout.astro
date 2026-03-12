@@ -1,11 +1,22 @@
 ---
+import type { Locale } from '../i18n/translations';
+
 interface Props {
   title?: string;
+  lang?: Locale;
 }
-const { title = 'Matheus Palmieri — Full Stack Developer' } = Astro.props;
+const { title = 'Matheus Palmieri — Full Stack Developer', lang = 'en' } = Astro.props;
+
+const htmlLang: Record<string, string> = {
+  en: 'en',
+  'pt-br': 'pt-BR',
+  es: 'es',
+  zh: 'zh',
+  it: 'it',
+};
 ---
 
-<html lang="en">
+<html lang={htmlLang[lang] ?? 'en'} data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -21,6 +32,14 @@ const { title = 'Matheus Palmieri — Full Stack Developer' } = Astro.props;
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles/global.css" />
+    <!-- Prevent flash of wrong theme -->
+    <script is:inline>
+      (function () {
+        const saved = localStorage.getItem('theme');
+        const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', saved || preferred);
+      })();
+    </script>
   </head>
   <body>
     <slot />

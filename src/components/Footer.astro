@@ -1,9 +1,15 @@
 ---
+import { translations } from '../i18n/translations';
+import type { Locale } from '../i18n/translations';
+
+interface Props { lang: Locale; }
+const { lang } = Astro.props;
+const t = translations[lang].footer;
 ---
 
 <footer class="footer">
   <p class="made-with">
-    Made with
+    {t.madeWith}
     <a href="https://astro.build" target="_blank" rel="noopener">Astro</a>
   </p>
   <div class="social">
@@ -28,30 +34,17 @@
 <style>
   .footer {
     padding: 2rem 0 3rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid var(--color-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
 
-  .made-with {
-    font-size: 0.8rem;
-    color: var(--color-subtle);
-  }
+  .made-with { font-size: 0.8rem; color: var(--color-subtle); }
+  .made-with a { color: var(--color-muted); }
+  .made-with a:hover { color: var(--color-text); }
 
-  .made-with a {
-    color: var(--color-muted);
-  }
-
-  .made-with a:hover {
-    color: #fff;
-  }
-
-  .social {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
+  .social { display: flex; align-items: center; gap: 1rem; }
 
   .social a {
     color: var(--color-subtle);
@@ -60,7 +53,5 @@
     transition: color 0.2s;
   }
 
-  .social a:hover {
-    color: #fff;
-  }
+  .social a:hover { color: var(--color-text); }
 </style>

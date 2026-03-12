@@ -5,22 +5,38 @@ import Hero from '../components/Hero.astro';
 import Experience from '../components/Experience.astro';
 import Education from '../components/Education.astro';
 import Footer from '../components/Footer.astro';
+import type { Locale } from '../i18n/translations';
+
+// Resolve language from query param or localStorage fallback (SSR: default to 'en')
+const validLocales: Locale[] = ['en', 'pt-br', 'es', 'zh', 'it'];
+const rawLang = Astro.url.searchParams.get('lang') ?? 'en';
+const lang: Locale = validLocales.includes(rawLang as Locale) ? (rawLang as Locale) : 'en';
 ---
 
-<Layout>
-  <Header />
-  <main class="main">
-    <Hero />
-    <Experience />
-    <Education />
-    <Footer />
+<Layout lang={lang}>
+  <Header lang={lang} />
+  <main class="container main-content">
+    <Hero lang={lang} />
+    <Experience lang={lang} />
+    <Education lang={lang} />
+    <Footer lang={lang} />
   </main>
 </Layout>
 
 <style>
-  .main {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 1.5rem;
+  .main-content {
+    padding-top: 0;
+    padding-bottom: 2rem;
   }
 </style>
+
+<script>
+  // On load, if localStorage has a lang and URL doesn't, redirect
+  const saved = localStorage.getItem('lang');
+  const url   = new URL(window.location.href);
+  if (saved && !url.searchParams.get('lang')) {
+    url.searchParams.set('lang', saved);
+    window.history.replaceState({}, '', url.toString());
+    window.location.reload();
+  }
+</script>

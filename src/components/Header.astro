@@ -1,15 +1,73 @@
 ---
+import { translations, localeLabels, localeNames } from '../i18n/translations';
+import type { Locale } from '../i18n/translations';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const t = translations[lang].nav;
+const themeT = translations[lang].theme;
 ---
 
 <header class="header">
-  <nav class="nav">
-    <a href="/" class="nav-logo">MP</a>
-    <div class="nav-links">
-      <a href="#experience">Experience</a>
-      <a href="#education">Education</a>
-      <a href="https://github.com/MatheusPalmieri" target="_blank" rel="noopener">GitHub</a>
+  <div class="container nav-inner">
+    <!-- Logo -->
+    <a href="/" class="nav-logo">Matheus Palmieri</a>
+
+    <!-- Right controls -->
+    <div class="nav-controls">
+      <!-- Theme toggle -->
+      <button
+        id="theme-toggle"
+        class="theme-btn"
+        aria-label="Toggle theme"
+        title="Toggle dark/light mode"
+      >
+        <span class="icon-sun" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </span>
+        <span class="icon-moon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </span>
+      </button>
+
+      <!-- Language selector -->
+      <div class="lang-selector" id="lang-selector">
+        <button class="lang-current" id="lang-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span>{localeLabels[lang]}</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="chevron">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+        <ul class="lang-dropdown" role="listbox" id="lang-dropdown">
+          {Object.entries(localeLabels).map(([code, label]) => (
+            <li
+              role="option"
+              data-lang={code}
+              class={`lang-option ${code === lang ? 'active' : ''}`}
+              aria-selected={code === lang}
+            >
+              <span class="lang-code">{label}</span>
+              <span class="lang-name">{localeNames[code as Locale]}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
-  </nav>
+  </div>
 </header>
 
 <style>
@@ -19,39 +77,194 @@
     left: 0;
     right: 0;
     z-index: 100;
-    padding: 1rem 2rem;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--color-header-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--color-border);
+    transition: background 0.25s ease;
   }
 
-  .nav {
-    max-width: var(--max-width);
-    margin: 0 auto;
+  .nav-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    height: 56px;
   }
 
   .nav-logo {
     font-weight: 600;
     font-size: 0.95rem;
-    color: #fff;
-    letter-spacing: 0.05em;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+    transition: opacity 0.2s;
   }
 
-  .nav-links {
+  .nav-logo:hover { opacity: 0.7; }
+
+  /* ─── Right controls ─── */
+  .nav-controls {
     display: flex;
-    gap: 1.5rem;
+    align-items: center;
+    gap: 0.5rem;
   }
 
-  .nav-links a {
-    font-size: 0.85rem;
+  /* ─── Theme button ─── */
+  .theme-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: transparent;
     color: var(--color-muted);
-    transition: color 0.2s;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
   }
 
-  .nav-links a:hover {
-    color: #fff;
+  .theme-btn:hover {
+    color: var(--color-text);
+    background: var(--color-skill-bg);
+  }
+
+  /* show/hide sun & moon based on theme */
+  [data-theme='dark']  .icon-sun  { display: flex; }
+  [data-theme='dark']  .icon-moon { display: none; }
+  [data-theme='light'] .icon-sun  { display: none; }
+  [data-theme='light'] .icon-moon { display: flex; }
+
+  /* ─── Language selector ─── */
+  .lang-selector {
+    position: relative;
+  }
+
+  .lang-current {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    height: 34px;
+  }
+
+  .lang-current:hover {
+    color: var(--color-text);
+    background: var(--color-skill-bg);
+  }
+
+  .chevron {
+    transition: transform 0.2s;
+  }
+
+  .lang-selector.open .chevron {
+    transform: rotate(180deg);
+  }
+
+  .lang-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 140px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 0.35rem;
+    list-style: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+    z-index: 200;
+  }
+
+  .lang-selector.open .lang-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .lang-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.45rem 0.65rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .lang-option:hover {
+    background: var(--color-skill-bg);
+  }
+
+  .lang-option.active {
+    background: var(--color-skill-bg);
+  }
+
+  .lang-code {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .lang-name {
+    font-size: 0.75rem;
+    color: var(--color-subtle);
   }
 </style>
+
+<script>
+  // ─── Theme toggle ───────────────────────────────────────
+  const themeBtn = document.getElementById('theme-toggle');
+  themeBtn?.addEventListener('click', () => {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+
+  // ─── Language selector ──────────────────────────────────
+  const langSelector = document.getElementById('lang-selector');
+  const langBtn      = document.getElementById('lang-btn');
+  const langDropdown = document.getElementById('lang-dropdown');
+
+  langBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    langSelector?.classList.toggle('open');
+    langBtn.setAttribute(
+      'aria-expanded',
+      String(langSelector?.classList.contains('open'))
+    );
+  });
+
+  document.addEventListener('click', () => {
+    langSelector?.classList.remove('open');
+    langBtn?.setAttribute('aria-expanded', 'false');
+  });
+
+  langDropdown?.querySelectorAll('.lang-option').forEach((opt) => {
+    opt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const code = (opt as HTMLElement).dataset.lang;
+      if (code) {
+        localStorage.setItem('lang', code);
+        // Reload with lang param
+        const url = new URL(window.location.href);
+        url.searchParams.set('lang', code);
+        window.location.href = url.toString();
+      }
+    });
+  });
+</script>
