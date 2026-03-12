@@ -6,26 +6,22 @@ interface Props {
   lang: Locale;
 }
 const { lang } = Astro.props;
-const t = translations[lang].nav;
+
+// Mapeamento de bandeiras para cada idioma
+const localeFlags: Record<Locale, string> = {
+  'en': '🇺🇸',
+  'pt-br': '🇧🇷',
+  'es': '🇪🇸',
+  'zh': '🇨🇳',
+  'it': '🇮🇹'
+};
 ---
 
-<header class="header">
+<header class="header" id="header">
   <div class="container nav-inner">
 
     <!-- Logo -->
     <a href="/" class="nav-logo">Matheus Palmieri</a>
-
-    <!-- Center nav links -->
-    <nav class="nav-links" aria-label="Main navigation">
-      <a href="#experience" class="nav-link">{t.experience}</a>
-      <a href="#education"  class="nav-link">{t.education}</a>
-      <a
-        href="https://github.com/MatheusPalmieri"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="nav-link"
-      >{t.github}</a>
-    </nav>
 
     <!-- Right controls -->
     <div class="nav-controls">
@@ -37,9 +33,9 @@ const t = translations[lang].nav;
         aria-label="Toggle theme"
         title="Toggle dark/light mode"
       >
-        <!-- Sun icon — shown in dark mode -->
-        <span class="icon-sun" aria-hidden="true">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Sun icon -->
+          <g class="sun-icon">
             <circle cx="12" cy="12" r="5"/>
             <line x1="12" y1="1" x2="12" y2="3"/>
             <line x1="12" y1="21" x2="12" y2="23"/>
@@ -49,21 +45,18 @@ const t = translations[lang].nav;
             <line x1="21" y1="12" x2="23" y2="12"/>
             <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-          </svg>
-        </span>
-        <!-- Moon icon — shown in light mode -->
-        <span class="icon-moon" aria-hidden="true">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-          </svg>
-        </span>
+          </g>
+          <!-- Moon icon -->
+          <path class="moon-icon" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
       </button>
 
       <!-- Language selector -->
       <div class="lang-selector" id="lang-selector">
         <button class="lang-current" id="lang-btn" aria-haspopup="listbox" aria-expanded="false">
-          <span>{localeLabels[lang]}</span>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="chevron">
+          <span class="lang-flag-current">{localeFlags[lang]}</span>
+          <span class="lang-label">{localeLabels[lang]}</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="chevron">
             <polyline points="6 9 12 15 18 9"/>
           </svg>
         </button>
@@ -75,8 +68,18 @@ const t = translations[lang].nav;
               class={`lang-option ${code === lang ? 'active' : ''}`}
               aria-selected={code === lang}
             >
-              <span class="lang-flag">{label}</span>
-              <span class="lang-name">{localeNames[code as Locale]}</span>
+              <div class="lang-option-content">
+                <span class="lang-flag">{localeFlags[code as Locale]}</span>
+                <div class="lang-text">
+                  <span class="lang-code">{label}</span>
+                  <span class="lang-name">{localeNames[code as Locale]}</span>
+                </div>
+              </div>
+              {code === lang && (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="check-icon">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              )}
             </li>
           ))}
         </ul>
@@ -86,18 +89,8 @@ const t = translations[lang].nav;
   </div>
 </header>
 
-<!-- Mobile nav (hamburger) -->
-<button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
-  <span></span><span></span><span></span>
-</button>
-<nav class="mobile-nav" id="mobile-nav" aria-hidden="true">
-  <a href="#experience" class="mobile-link">{t.experience}</a>
-  <a href="#education"  class="mobile-link">{t.education}</a>
-  <a href="https://github.com/MatheusPalmieri" target="_blank" rel="noopener noreferrer" class="mobile-link">{t.github}</a>
-</nav>
-
 <style>
-  /* ─── Header shell ─────────────────────────────────────────── */
+  /* ─── Header shell ───────────────────────────────────────────────────── */
   .header {
     position: fixed;
     top: 0;
@@ -107,8 +100,12 @@ const t = translations[lang].nav;
     background: var(--color-header-bg);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--color-border);
-    transition: background 0.25s ease;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease;
+  }
+
+  .header.scrolled {
+    border-bottom-color: var(--color-border);
   }
 
   .nav-inner {
@@ -119,7 +116,7 @@ const t = translations[lang].nav;
     gap: 1rem;
   }
 
-  /* ─── Logo ─────────────────────────────────────────────────── */
+  /* ─── Logo ─────────────────────────────────────────────────────────────── */
   .nav-logo {
     font-weight: 600;
     font-size: 0.95rem;
@@ -131,32 +128,7 @@ const t = translations[lang].nav;
   }
   .nav-logo:hover { opacity: 0.7; }
 
-  /* ─── Center nav links ─────────────────────────────────────── */
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    flex: 1;
-    justify-content: center;
-  }
-
-  .nav-link {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--color-muted);
-    padding: 0.3rem 0.65rem;
-    border-radius: 6px;
-    transition: color 0.2s, background 0.2s;
-    white-space: nowrap;
-  }
-
-  .nav-link:hover {
-    color: var(--color-text);
-    background: var(--color-skill-bg);
-    opacity: 1;
-  }
-
-  /* ─── Right controls ───────────────────────────────────────── */
+  /* ─── Right controls ───────────────────────────────────────────────────── */
   .nav-controls {
     display: flex;
     align-items: center;
@@ -164,75 +136,132 @@ const t = translations[lang].nav;
     flex-shrink: 0;
   }
 
-  /* ─── Theme button ─────────────────────────────────────────── */
+  /* ─── Theme button ─────────────────────────────────────────────────────── */
   .theme-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
     border: 1px solid var(--color-border);
     background: transparent;
     color: var(--color-muted);
     cursor: pointer;
-    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    transition: all 0.2s ease;
+    position: relative;
   }
+  
   .theme-btn:hover {
     color: var(--color-text);
     background: var(--color-skill-bg);
+    border-color: var(--color-border);
+    transform: scale(1.05);
   }
 
-  /* show/hide sun & moon based on theme */
-  [data-theme='dark']  .icon-sun  { display: flex; }
-  [data-theme='dark']  .icon-moon { display: none; }
-  [data-theme='light'] .icon-sun  { display: none; }
-  [data-theme='light'] .icon-moon { display: flex; }
+  .theme-btn:active {
+    transform: scale(0.95);
+  }
 
-  /* ─── Language selector ────────────────────────────────────── */
-  .lang-selector { position: relative; }
+  .theme-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .theme-btn:hover .theme-icon {
+    transform: rotate(20deg);
+  }
+
+  /* Show/hide sun & moon based on theme with smooth transition */
+  .sun-icon,
+  .moon-icon {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  [data-theme='dark'] .sun-icon {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  
+  [data-theme='dark'] .moon-icon {
+    opacity: 0;
+    transform: scale(0.5) rotate(-90deg);
+  }
+
+  [data-theme='light'] .sun-icon {
+    opacity: 0;
+    transform: scale(0.5) rotate(90deg);
+  }
+  
+  [data-theme='light'] .moon-icon {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  /* ─── Language selector ─────────────────────────────────────────────────── */
+  .lang-selector { 
+    position: relative;
+  }
 
   .lang-current {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
-    padding: 0.3rem 0.65rem;
-    border-radius: 8px;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
     border: 1px solid var(--color-border);
     background: transparent;
-    color: var(--color-muted);
-    font-size: 0.8rem;
+    color: var(--color-text);
+    font-size: 0.85rem;
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;
-    height: 34px;
-    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    height: 40px;
+    transition: all 0.2s ease;
   }
+  
   .lang-current:hover {
-    color: var(--color-text);
     background: var(--color-skill-bg);
+    border-color: var(--color-border);
+    transform: scale(1.02);
   }
 
-  .chevron { transition: transform 0.2s; }
-  .lang-selector.open .chevron { transform: rotate(180deg); }
+  .lang-flag-current {
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+
+  .lang-label {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .chevron { 
+    transition: transform 0.2s ease;
+    opacity: 0.6;
+  }
+  
+  .lang-selector.open .chevron { 
+    transform: rotate(180deg); 
+  }
 
   .lang-dropdown {
     position: absolute;
-    top: calc(100% + 6px);
+    top: calc(100% + 8px);
     right: 0;
-    min-width: 150px;
+    min-width: 200px;
     background: var(--color-bg);
     border: 1px solid var(--color-border);
-    border-radius: 10px;
-    padding: 0.35rem;
+    border-radius: 12px;
+    padding: 0.5rem;
     list-style: none;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-6px);
-    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
     z-index: 200;
   }
+  
   .lang-selector.open .lang-dropdown {
     opacity: 1;
     visibility: visible;
@@ -243,93 +272,103 @@ const t = translations[lang].nav;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.45rem 0.65rem;
-    border-radius: 6px;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background 0.15s ease;
   }
-  .lang-option:hover  { background: var(--color-skill-bg); }
-  .lang-option.active { background: var(--color-skill-bg); }
+  
+  .lang-option:hover {
+    background: var(--color-skill-bg);
+  }
+  
+  .lang-option.active {
+    background: var(--color-skill-bg);
+  }
+
+  .lang-option-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+  }
 
   .lang-flag {
-    font-size: 0.8rem;
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .lang-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .lang-code {
+    font-size: 0.85rem;
     font-weight: 600;
     color: var(--color-text);
+    line-height: 1.2;
   }
+
   .lang-name {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--color-subtle);
+    line-height: 1.2;
   }
 
-  /* ─── Hamburger (mobile only) ──────────────────────────────── */
-  .hamburger {
-    display: none;
-    position: fixed;
-    top: 11px;
-    right: 1rem;
-    z-index: 110;
-    flex-direction: column;
-    gap: 5px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 6px;
-  }
-  .hamburger span {
-    display: block;
-    width: 22px;
-    height: 2px;
-    background: var(--color-text);
-    border-radius: 2px;
-    transition: transform 0.25s, opacity 0.25s;
-  }
-  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-  .hamburger.open span:nth-child(2) { opacity: 0; }
-  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-  /* ─── Mobile nav drawer ────────────────────────────────────── */
-  .mobile-nav {
-    display: none;
-    position: fixed;
-    top: 56px;
-    left: 0;
-    right: 0;
-    z-index: 99;
-    background: var(--color-header-bg);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--color-border);
-    flex-direction: column;
-    padding: 0.75rem 1rem;
-    gap: 0.25rem;
-  }
-  .mobile-nav.open { display: flex; }
-
-  .mobile-link {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--color-muted);
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    transition: color 0.2s, background 0.2s;
-  }
-  .mobile-link:hover {
-    color: var(--color-text);
-    background: var(--color-skill-bg);
-    opacity: 1;
+  .check-icon {
+    color: var(--color-accent-from);
+    flex-shrink: 0;
   }
 
-  /* ─── Responsive ───────────────────────────────────────────── */
+  /* ─── Responsive ─────────────────────────────────────────────────────────── */
   @media (max-width: 640px) {
-    .nav-links  { display: none; }
-    .hamburger  { display: flex; }
-    /* hide right controls on very small screens to save space */
-    .nav-controls { gap: 0.25rem; }
+    .nav-controls { 
+      gap: 0.4rem; 
+    }
+
+    .theme-btn,
+    .lang-current {
+      width: 36px;
+      height: 36px;
+    }
+
+    .lang-label {
+      display: none;
+    }
+
+    .lang-current {
+      padding: 0.5rem;
+      justify-content: center;
+    }
+
+    .lang-flag-current {
+      font-size: 1.2rem;
+    }
   }
 </style>
 
 <script>
-  // ─── Theme toggle ────────────────────────────────────────────
+  // ─── Scroll detection for border ─────────────────────────────────────────
+  const header = document.getElementById('header');
+  
+  function handleScroll() {
+    if (window.scrollY > 0) {
+      header?.classList.add('scrolled');
+    } else {
+      header?.classList.remove('scrolled');
+    }
+  }
+
+  // Initial check
+  handleScroll();
+  
+  // Listen to scroll
+  window.addEventListener('scroll', handleScroll, { passive: true });
+
+  // ─── Theme toggle ─────────────────────────────────────────────────────────
   const themeBtn = document.getElementById('theme-toggle');
   themeBtn?.addEventListener('click', () => {
     const html    = document.documentElement;
@@ -339,7 +378,7 @@ const t = translations[lang].nav;
     localStorage.setItem('theme', next);
   });
 
-  // ─── Language selector ───────────────────────────────────────
+  // ─── Language selector ────────────────────────────────────────────────────
   const langSelector = document.getElementById('lang-selector');
   const langBtn      = document.getElementById('lang-btn');
   const langDropdown = document.getElementById('lang-dropdown');
@@ -368,27 +407,6 @@ const t = translations[lang].nav;
         url.searchParams.set('lang', code);
         window.location.href = url.toString();
       }
-    });
-  });
-
-  // ─── Hamburger (mobile) ──────────────────────────────────────
-  const hamburger = document.getElementById('hamburger');
-  const mobileNav = document.getElementById('mobile-nav');
-
-  hamburger?.addEventListener('click', () => {
-    const isOpen = hamburger.classList.toggle('open');
-    mobileNav?.classList.toggle('open', isOpen);
-    hamburger.setAttribute('aria-expanded', String(isOpen));
-    mobileNav?.setAttribute('aria-hidden', String(!isOpen));
-  });
-
-  // Close mobile nav when a link is clicked
-  mobileNav?.querySelectorAll('.mobile-link').forEach((link) => {
-    link.addEventListener('click', () => {
-      hamburger?.classList.remove('open');
-      mobileNav.classList.remove('open');
-      hamburger?.setAttribute('aria-expanded', 'false');
-      mobileNav.setAttribute('aria-hidden', 'true');
     });
   });
 </script>
