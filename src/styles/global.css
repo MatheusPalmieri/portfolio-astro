@@ -1,0 +1,47 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-bg: #000000;
+  --color-text: #ffffff;
+  --color-muted: #a0a0a0;
+  --color-subtle: #6b6b6b;
+  --color-accent-from: #60a5fa;
+  --color-accent-to: #a78bfa;
+  --color-link: #60a5fa;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --max-width: 680px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+a:hover {
+  opacity: 0.75;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, var(--color-accent-from), var(--color-accent-to));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
