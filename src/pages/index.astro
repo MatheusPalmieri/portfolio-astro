@@ -7,7 +7,7 @@ import Education from '../components/Education.astro';
 import Footer from '../components/Footer.astro';
 import type { Locale } from '../i18n/translations';
 
-// Resolve language from query param or localStorage fallback (SSR: default to 'en')
+// Resolve language from query param — SSR default: 'en'
 const validLocales: Locale[] = ['en', 'pt-br', 'es', 'zh', 'it'];
 const rawLang = Astro.url.searchParams.get('lang') ?? 'en';
 const lang: Locale = validLocales.includes(rawLang as Locale) ? (rawLang as Locale) : 'en';
@@ -15,23 +15,27 @@ const lang: Locale = validLocales.includes(rawLang as Locale) ? (rawLang as Loca
 
 <Layout lang={lang}>
   <Header lang={lang} />
+
+  <!--
+    padding-top: 56px  → compensa o header fixo (height: 56px)
+    O Hero já tem padding-top: 6rem para espaçamento interno.
+  -->
   <main class="container main-content">
-    <Hero lang={lang} />
+    <Hero       lang={lang} />
     <Experience lang={lang} />
-    <Education lang={lang} />
-    <Footer lang={lang} />
+    <Education  lang={lang} />
+    <Footer     lang={lang} />
   </main>
 </Layout>
 
 <style>
   .main-content {
-    padding-top: 0;
-    padding-bottom: 2rem;
+    padding-top: 56px; /* header height */
   }
 </style>
 
 <script>
-  // On load, if localStorage has a lang and URL doesn't, redirect
+  // On load: if localStorage has a saved lang and URL doesn't, redirect
   const saved = localStorage.getItem('lang');
   const url   = new URL(window.location.href);
   if (saved && !url.searchParams.get('lang')) {
