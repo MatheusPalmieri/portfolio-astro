@@ -31,12 +31,15 @@ const lang: Locale = validLocales.includes(rawLang as Locale) ? (rawLang as Loca
 </style>
 
 <script>
-  // On first load: if localStorage has a saved lang but URL doesn't have ?lang=,
-  // redirect once using replace (no history entry, no reload loop).
-  const saved = localStorage.getItem('lang');
-  const url   = new URL(window.location.href);
+  const saved     = localStorage.getItem('lang');
+  const url       = new URL(window.location.href);
+  const urlLang   = url.searchParams.get('lang');
 
-  if (saved && !url.searchParams.get('lang')) {
+  if (urlLang) {
+    // Se tem lang na URL, garante que está salvo como última seleção
+    localStorage.setItem('lang', urlLang);
+  } else if (saved) {
+    // Se não tem lang na URL mas tem salvo, redireciona
     url.searchParams.set('lang', saved);
     window.location.replace(url.toString());
   }

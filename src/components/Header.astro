@@ -1,30 +1,68 @@
 ---
-import { translations, localeLabels, localeNames } from '../i18n/translations';
-import type { Locale } from '../i18n/translations';
+import { translations, localeLabels, localeNames } from "../i18n/translations";
+import type { Locale } from "../i18n/translations";
 
 interface Props {
   lang: Locale;
 }
 const { lang } = Astro.props;
 
-const localeFlags: Record<Locale, string> = {
-  'en':    '🇺🇸',
-  'pt-br': '🇧🇷',
-  'es':    '🇪🇸',
-  'zh':    '🇨🇳',
-  'it':    '🇮🇹',
+// Bandeiras em SVG com proporção 1:1 (Visual Premium/Estilizado)
+const Flags = {
+  en: `<svg viewBox="0 0 512 512"><mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask><g mask="url(#a)"><path fill="#f0f0f0" d="M0 0h512v512H0z"/><path fill="#d80027" d="M0 0h512v39.4H0zm0 78.8h512v39.3H0zm0 78.7h512v39.4H0zm0 78.8h512v39.4H0zm0 78.7h512v39.4H0zm0 78.8h512v39.4H0zm0 78.8h512v39.3H0z"/><path fill="#2e52b2" d="M0 0h256v236.3H0z"/><path fill="#f0f0f0" d="m164.3 126.3 10.3 32-27.1-19.7-27.1 19.7 10.3-32-27.1-19.7h33.5l10.4-32 10.4 32h33.5zm-82.2 0 10.4 32L65.4 138.6 38.3 158.3l10.3-32L21.5 106.6H55l10.4-32 10.4 32h33.5zm164.3 0 10.4 32-27.1-19.7-27.1 19.7 10.3-32-27.1-19.7h33.5l10.4-32 10.4 32h33.5zm-82.2-78.8 10.4 32-27-19.7-27.2 19.7 10.4-32-27.1-19.7H55l10.4-32 10.4 32h33.5zm82.2 0 10.4 32-27.1-19.7-27.1 19.7 10.3-32-27.1-19.7h33.5l10.4-32 10.4 32h33.5zM82.1 47.5 92.5 79.5 65.4 59.8l-27.1 19.7 10.3-32L21.5 27.8H55l10.4-32 10.4 32h33.5z"/></g></svg>`,
+  "pt-br": `<svg viewBox="0 0 512 512"><rect width="512" height="512" fill="#009b3a"/><path fill="#fedf00" d="m256 51 218 205-218 205L38 256z"/><circle fill="#0438a1" cx="256" cy="256" r="113"/><path fill="#fff" d="M368 269c-2-35-27-68-63-80-36-13-77-5-106 19l12 17c22-19 55-25 83-15 28 10 47 34 49 62z"/></svg>`,
+  es: `<svg viewBox="0 0 512 512"><rect width="512" height="512" fill="#74acdf"/><rect width="512" height="170.7" y="170.7" fill="#fff"/><circle cx="256" cy="256" r="42.7" fill="#f6b40e"/><g fill="#f6b40e"><circle cx="256" cy="256" r="25"/><path d="M256 195v122M195 256h122"/></g></svg>`,
+  zh: `<svg viewBox="0 0 512 512"><rect width="512" height="512" fill="#ee1c25"/><path fill="#ffff00" d="M96 58 79 108l43-31h-53l43 31-16-50zm62-30 6 19-17-13h22l-17 13 6-19zm24 41 3 20-15-15h19l-14 15 2-20zm-3 65 7 19-18-13h23l-18 13 6-19zm-22 40 16 12-10-18 10-18-16 13h-19l19-1z"/></svg>`,
+  it: `<svg viewBox="0 0 512 512"><rect width="170.7" height="512" fill="#009246"/><rect width="170.6" height="512" x="170.7" fill="#fff"/><rect width="170.7" height="512" x="341.3" fill="#ce2b37"/></svg>`,
+};
+
+// Mapeamento de como cada língua é chamada em cada idioma (para a Linha 2)
+const translatedNames: Record<Locale, Record<Locale, string>> = {
+  en: {
+    en: "English",
+    "pt-br": "Portuguese",
+    es: "Spanish",
+    zh: "Chinese",
+    it: "Italian",
+  },
+  "pt-br": {
+    en: "Inglês",
+    "pt-br": "Português",
+    es: "Espanhol",
+    zh: "Chinês",
+    it: "Italiano",
+  },
+  es: {
+    en: "Inglés",
+    "pt-br": "Portugués",
+    es: "Español",
+    zh: "Chino",
+    it: "Italiano",
+  },
+  zh: {
+    en: "英语",
+    "pt-br": "葡萄牙语",
+    es: "西班牙语",
+    zh: "中文",
+    it: "意大利语",
+  },
+  it: {
+    en: "Inglese",
+    "pt-br": "Portoghese",
+    es: "Spagnolo",
+    zh: "Cinese",
+    it: "Italiano",
+  },
 };
 ---
 
 <header class="header" id="header">
   <div class="container nav-inner">
-
     <!-- Logo -->
     <a href="/" class="nav-logo">Matheus Palmieri</a>
 
     <!-- Right controls -->
     <div class="nav-controls">
-
       <!-- Theme toggle -->
       <button
         id="theme-toggle"
@@ -33,56 +71,106 @@ const localeFlags: Record<Locale, string> = {
         title="Toggle dark/light mode"
       >
         <!-- Sun: visible in dark mode -->
-        <svg id="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
-          <circle cx="12" cy="12" r="5"/>
-          <line x1="12" y1="1" x2="12" y2="3"/>
-          <line x1="12" y1="21" x2="12" y2="23"/>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-          <line x1="1" y1="12" x2="3" y2="12"/>
-          <line x1="21" y1="12" x2="23" y2="12"/>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        <svg
+          id="icon-sun"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          style="display:none"
+        >
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
         </svg>
         <!-- Moon: visible in light mode -->
-        <svg id="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        <svg
+          id="icon-moon"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          style="display:none"
+        >
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
 
       <!-- Language selector -->
       <div class="lang-selector" id="lang-selector">
-        <button class="lang-current" id="lang-btn" aria-haspopup="listbox" aria-expanded="false">
-          <span class="lang-flag-current">{localeFlags[lang]}</span>
+        <button
+          class="lang-current"
+          id="lang-btn"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+        >
+          <span class="lang-flag-current" set:html={Flags[lang]} />
           <span class="lang-label">{localeLabels[lang]}</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="chevron">
-            <polyline points="6 9 12 15 18 9"/>
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="chevron"
+          >
+            <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </button>
 
         <ul class="lang-dropdown" role="listbox" id="lang-dropdown">
-          {Object.entries(localeLabels).map(([code, label]) => (
-            <li
-              role="option"
-              data-lang={code}
-              class={`lang-option ${code === lang ? 'active' : ''}`}
-              aria-selected={code === lang}
-            >
-              <span class="lang-flag">{localeFlags[code as Locale]}</span>
-              <div class="lang-text">
-                <span class="lang-code">{label}</span>
-                <span class="lang-name">{localeNames[code as Locale]}</span>
-              </div>
-              {code === lang && (
-                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              )}
-            </li>
-          ))}
+          {
+            Object.entries(localeLabels).map(([code, label]) => (
+              <li
+                role="option"
+                data-lang={code}
+                class={`lang-option ${code === lang ? "active" : ""}`}
+                aria-selected={code === lang}
+              >
+                <span class="lang-flag" set:html={Flags[code as Locale]} />
+                <div class="lang-text">
+                  <span class="lang-code">{localeNames[code as Locale]}</span>
+                  <span class="lang-name">{translatedNames[lang][code as Locale]}</span>
+                </div>
+                {code === lang && (
+                  <svg
+                    class="check-icon"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                )}
+              </li>
+            ))
+          }
         </ul>
       </div>
-
     </div>
   </div>
 </header>
@@ -124,7 +212,9 @@ const localeFlags: Record<Locale, string> = {
     flex-shrink: 0;
     transition: opacity 0.2s;
   }
-  .nav-logo:hover { opacity: 0.7; }
+  .nav-logo:hover {
+    opacity: 0.7;
+  }
 
   /* ─── Right controls ────────────────────────────────────────────────────── */
   .nav-controls {
@@ -146,7 +236,10 @@ const localeFlags: Record<Locale, string> = {
     background: transparent;
     color: var(--color-muted);
     cursor: pointer;
-    transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    transition:
+      color 0.2s ease,
+      background 0.2s ease,
+      transform 0.2s ease;
   }
 
   .theme-btn:hover {
@@ -188,8 +281,21 @@ const localeFlags: Record<Locale, string> = {
   }
 
   .lang-flag-current {
-    font-size: 1.05rem;
-    line-height: 1;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    flex-shrink: 0;
+  }
+
+  .lang-flag-current :global(svg) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .lang-label {
@@ -259,9 +365,21 @@ const localeFlags: Record<Locale, string> = {
   }
 
   .lang-flag {
-    font-size: 1.3rem;
-    line-height: 1;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
     flex-shrink: 0;
+  }
+
+  .lang-flag :global(svg) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .lang-text {
@@ -326,70 +444,71 @@ const localeFlags: Record<Locale, string> = {
 <script>
   // ─── Theme icon sync ─────────────────────────────────────────────────────
   // CSS scoped cannot reach html[data-theme], so we control icons via JS only.
-  const iconSun  = document.getElementById('icon-sun')  as SVGElement | null;
-  const iconMoon = document.getElementById('icon-moon') as SVGElement | null;
+  const iconSun = document.getElementById("icon-sun") as SVGElement | null;
+  const iconMoon = document.getElementById("icon-moon") as SVGElement | null;
 
   function syncIcons(theme: string) {
     if (!iconSun || !iconMoon) return;
-    if (theme === 'dark') {
-      iconSun.style.display  = 'block'; // dark → show sun (switch to light)
-      iconMoon.style.display = 'none';
+    if (theme === "dark") {
+      iconSun.style.display = "block"; // dark → show sun (switch to light)
+      iconMoon.style.display = "none";
     } else {
-      iconSun.style.display  = 'none';
-      iconMoon.style.display = 'block'; // light → show moon (switch to dark)
+      iconSun.style.display = "none";
+      iconMoon.style.display = "block"; // light → show moon (switch to dark)
     }
   }
 
   // Sync on load
-  const currentTheme = document.documentElement.getAttribute('data-theme') ?? 'dark';
+  const currentTheme =
+    document.documentElement.getAttribute("data-theme") ?? "dark";
   syncIcons(currentTheme);
 
   // ─── Theme toggle ────────────────────────────────────────────────────────
-  const themeBtn = document.getElementById('theme-toggle');
+  const themeBtn = document.getElementById("theme-toggle");
 
-  themeBtn?.addEventListener('click', () => {
-    const html    = document.documentElement;
-    const current = html.getAttribute('data-theme') ?? 'dark';
-    const next    = current === 'dark' ? 'light' : 'dark';
-    html.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
+  themeBtn?.addEventListener("click", () => {
+    const html = document.documentElement;
+    const current = html.getAttribute("data-theme") ?? "dark";
+    const next = current === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
     syncIcons(next);
   });
 
   // ─── Scroll detection ────────────────────────────────────────────────────
-  const header = document.getElementById('header');
+  const header = document.getElementById("header");
 
   function handleScroll() {
-    header?.classList.toggle('scrolled', window.scrollY > 0);
+    header?.classList.toggle("scrolled", window.scrollY > 0);
   }
 
   handleScroll();
-  window.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener("scroll", handleScroll, { passive: true });
 
   // ─── Language selector ───────────────────────────────────────────────────
-  const langSelector = document.getElementById('lang-selector');
-  const langBtn      = document.getElementById('lang-btn');
-  const langDropdown = document.getElementById('lang-dropdown');
+  const langSelector = document.getElementById("lang-selector");
+  const langBtn = document.getElementById("lang-btn");
+  const langDropdown = document.getElementById("lang-dropdown");
 
-  langBtn?.addEventListener('click', (e) => {
+  langBtn?.addEventListener("click", (e) => {
     e.stopPropagation();
-    const isOpen = langSelector?.classList.toggle('open');
-    langBtn.setAttribute('aria-expanded', String(isOpen));
+    const isOpen = langSelector?.classList.toggle("open");
+    langBtn.setAttribute("aria-expanded", String(isOpen));
   });
 
-  document.addEventListener('click', () => {
-    langSelector?.classList.remove('open');
-    langBtn?.setAttribute('aria-expanded', 'false');
+  document.addEventListener("click", () => {
+    langSelector?.classList.remove("open");
+    langBtn?.setAttribute("aria-expanded", "false");
   });
 
-  langDropdown?.querySelectorAll('.lang-option').forEach((opt) => {
-    opt.addEventListener('click', (e) => {
+  langDropdown?.querySelectorAll(".lang-option").forEach((opt) => {
+    opt.addEventListener("click", (e) => {
       e.stopPropagation();
       const code = (opt as HTMLElement).dataset.lang;
       if (code) {
-        localStorage.setItem('lang', code);
+        localStorage.setItem("lang", code);
         const url = new URL(window.location.href);
-        url.searchParams.set('lang', code);
+        url.searchParams.set("lang", code);
         window.location.href = url.toString();
       }
     });
